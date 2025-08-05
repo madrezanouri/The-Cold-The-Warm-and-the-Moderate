@@ -206,7 +206,7 @@ The table below summarizes the performance of Random Forest, Gradient Boosting, 
 
 
 ![Test Error and Moderate F1-score Improvement Across Models](images/moderate_scor.png)
-![Macro Avg and Moderate F1-score Comparison Across Models and Stages](images/MA_moderate_f1_score.png)
+![Macro Avg and Moderate F1-score Comparison Across Models and Stages](images/MA_modetrate_f1_score.png)
 
 **Notes**:
 - Human-in-the-loop validation added ~30 samples, improving Moderate class representation (~15-20 samples).
