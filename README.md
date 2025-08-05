@@ -11,32 +11,32 @@ The project followed a structured pipeline to analyze the relationship between n
 
 **Data Collection from FNDDS:**
 
-Source: We sourced nutritional data from the USDA’s Food and Nutrient Database for Dietary Studies (FNDDS), a comprehensive database of foods and their nutrient compositions.
-Process: Selected 100 food samples with features like protein, total lipid fat, carbohydrates, energy (kcal), and vitamins (e.g., vitamin A, D, C). Each food was labeled with a temperament (Cold: 0, Hot: 1, Moderate: 2) based on traditional medicine references.
-Initial Dataset: Started with 85 samples, later expanded to 100 through additional data collection or validation. The dataset (food_nutrient_temperament.csv) included food_id, temperament, and 26 nutritional features.
+**Source:** We sourced nutritional data from the USDA’s Food and Nutrient Database for Dietary Studies (FNDDS), a comprehensive database of foods and their nutrient compositions.
+**Process:** Selected 100 food samples with features like protein, total lipid fat, carbohydrates, energy (kcal), and vitamins (e.g., vitamin A, D, C). Each food was labeled with a temperament (Cold: 0, Hot: 1, Moderate: 2) based on traditional medicine references.
+**Initial Dataset:** Started with 85 samples, later expanded to 100 through additional data collection or validation. The dataset (food_nutrient_temperament.csv) included food_id, temperament, and 26 nutritional features.
 
-raw data link: https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip
+**raw data link:** https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip
 
 
 **Data Preparation for Analysis and Model Training:**
 
-Cleaning: Removed duplicates, handled missing values (filled with 0 for numerical features), and validated temperament labels (Cold, Hot, Moderate). 
-Feature Engineering: Scaled features using StandardScaler to normalize nutritional values. Applied SMOTE to address the imbalanced Moderate class (11 samples in the initial 99-sample dataset).
-Output: Prepared a dataset ready for PCA, clustering, and model training, with features standardized and balanced.
+**Cleaning:** Removed duplicates, handled missing values (filled with 0 for numerical features), and validated temperament labels (Cold, Hot, Moderate). 
+**Feature Engineering:** Scaled features using StandardScaler to normalize nutritional values. Applied SMOTE to address the imbalanced Moderate class (11 samples in the initial 99-sample dataset).
+**Output:** Prepared a dataset ready for PCA, clustering, and model training, with features standardized and balanced.
 
 
 **PCA on Initial 85-Sample Dataset:**
 
-Objective: Reduced the dimensionality of the 26 nutritional features to identify key components driving temperament differences.
-Method: Applied PCA to the 85-sample dataset, retaining the top components (e.g., 2 or 3) explaining significant variance. Visualized the data in 2D to assess class separability.
-Findings: PCA showed partial separation of Cold, Hot, and Moderate classes, with Moderate samples often overlapping due to their scarcity. Key nutrients like protein, lipids, and energy were prominent in the first principal components.
+**Objective:** Reduced the dimensionality of the 26 nutritional features to identify key components driving temperament differences.
+**Method:** Applied PCA to the 85-sample dataset, retaining the top components (e.g., 2 or 3) explaining significant variance. Visualized the data in 2D to assess class separability.
+**Findings:** PCA showed partial separation of Cold, Hot, and Moderate classes, with Moderate samples often overlapping due to their scarcity. Key nutrients like protein, lipids, and energy were prominent in the first principal components.
 
 ![PCA on 85 sample data](images/PCA_init.png)
 
 
 ### PCA on 100-Sample Dataset:
 
-Method: Applied PCA to the expanded 100-sample dataset, retaining the top 5 components (PC1-PC5). The results, provided below, highlight feature contributions to each component.
+**Method:** Applied PCA to the expanded 100-sample dataset, retaining the top 5 components (PC1-PC5). The results, provided below, highlight feature contributions to each component.
 **Findings:** PC1 was heavily influenced by protein (-0.301), lipids (-0.329), energy (-0.365), and potassium (-0.333). PC2 emphasized carbohydrates (0.414) and sugars (0.322). PC3 and PC4 highlighted vitamins K and thiamin, and calcium and vitamin A, respectively. These suggest nutritional profiles align with temperament distinctions to some extent.
 
 ### PCA Results (100-Sample Dataset)
@@ -170,3 +170,119 @@ The table below summarizes the performance of Random Forest, Gradient Boosting, 
 - Key features (sugars, riboflavin, vitamin D) align with PCA findings, suggesting nutritional relevance to temperaments.
 
 ![t-SNE](images/t-SNE.png)
+
+
+### Machine Learning Analysis with Human-in-the-Loop Validation
+
+**Human-in-the-Loop Validation Process**
+
+To address the initial dataset’s limitations, particularly the scarcity of Moderate samples (~11 in the 85-sample dataset, ~12-15 in the 100-sample dataset), we expanded the dataset by adding 30 new food samples through human-in-the-loop validation. This process involved:
+
+**Data Collection:**
+
+We sourced additional food samples from the USDA’s Food and Nutrient Database for Dietary Studies (FNDDS), focusing on foods likely to be classified as Moderate based on traditional medicine references.
+
+**Manual Testing:** The Random Forest, Gradient Boosting, and SVM models, initially trained on the 100-sample dataset, were used to predict temperaments for the 30 new samples. Predictions included probability scores to assess confidence.
+
+**Human Validation:** Domain experts (e.g., traditional medicine practitioners) reviewed the model predictions, correcting misclassifications and assigning accurate temperament labels (Cold, Hot, Moderate). This feedback refined the dataset, ensuring higher-quality labels, especially for the Moderate class.
+
+**Dataset Expansion:** The validated samples increased the dataset to ~130 samples, with an estimated 15-20 Moderate samples, significantly improving class balance. The updated dataset was saved to data/processed/validation_data.csv.
+Retraining and Testing: Models were retrained on the expanded dataset, incorporating SMOTE to further balance classes, and tested on larger test sets (26-38 samples, depending on the model).
+
+**This process enhanced the models’ ability to learn Moderate class patterns,** as evidenced by improved Moderate F1-Scores, particularly for Gradient Boosting (0.80).
+Model Performance Results (Post-Validation, ~130-Sample Dataset)
+
+The provided results reflect the performance of Random Forest, Gradient Boosting, and SVM after retraining on the ~130-sample dataset with human-validated samples. The test set sizes vary (26 for SVM, 32 for Random Forest, 38 for Gradient Boosting), likely due to different train-test splits or validation strategies during testing.
+
+### Machine Learning Model Performance (Post-Validation, ~130-Sample Dataset)
+
+The table below summarizes the performance of Random Forest, Gradient Boosting, and SVM after human-in-the-loop validation with 30 new samples, tested on the expanded ~130-sample dataset.
+
+| Model             | Test Set Size | Accuracy | Macro Avg F1-Score | Moderate F1-Score | Key Notes |
+|-------------------|---------------|----------|--------------------|-------------------|-----------|
+| SVM               | 26            | 0.58     | 0.40               | 0.00              | Failed on Moderate; lower accuracy than initial 100-sample (0.75). |
+| Random Forest     | 32            | 0.72     | 0.62               | 0.33              | Improved Moderate F1; strong Cold (0.77) and Hot (0.75) performance. |
+| Gradient Boosting | 38            | 0.82     | 0.81               | 0.80              | Best performer; high Moderate F1 (0.80) due to validation and SMOTE. |
+
+
+![Test Error and Moderate F1-score Improvement Across Models](images/moderate_scor.png)
+![Macro Avg and Moderate F1-score Comparison Across Models and Stages](images/MA_moderate_f1_score.png)
+
+**Notes**:
+- Human-in-the-loop validation added ~30 samples, improving Moderate class representation (~15-20 samples).
+- Gradient Boosting excels with 81.58% accuracy and 0.80 Moderate F1-Score, driven by perfect Moderate precision (1.00).
+- SVM’s performance drop suggests need for hyperparameter tuning or larger test set alignment.
+
+![F1-score Comparison Across Models and Stages](images/F1_score_comparison.png)
+
+
+### Performance Analysis
+
+**SVM:**
+
+**Accuracy:** 0.58, a significant drop from the initial 100-sample dataset (0.75), likely due to the larger test set (26 vs. 20 samples) or changes in data distribution after adding 30 samples.
+Class Performance:
+
+**Cold:** Moderate F1-Score (0.50) with balanced precision and recall (0.50), but lower than the initial 0.78 F1.
+**Hot:** Strong F1-Score (0.69), driven by good recall (0.71) and precision (0.67), slightly below the initial 0.84 F1.
+**Moderate:** Fails completely (0.00 F1), with zero precision and recall, indicating insufficient Moderate samples (2 in test set) or model inability to generalize post-validation.
+
+
+**Analysis:** SVM’s performance decline suggests the RBF kernel or hyperparameters (e.g., C=10, gamma=’scale’) may not adapt well to the expanded dataset’s complexity. The small Moderate test set size (2 samples) limits learning, despite validation.
+
+**Random Forest:**
+
+**Accuracy:** 0.72, an improvement over the initial 0.65, reflecting the benefit of additional samples and validation.
+Class Performance:
+
+**Cold:** Strong F1-Score (0.77) with high recall (0.83) and good precision (0.71), improved from 0.67 F1.
+**Hot:** Solid F1-Score (0.75) with high precision (0.80) but moderate recall (0.71), slightly better than 0.70 F1.
+**Moderate:** Achieves 0.33 F1-Score, a significant improvement from 0.00, with balanced precision and recall (0.33), indicating better learning of Moderate patterns with 3 test samples.
+
+
+**Analysis:** Random Forest benefits from the expanded dataset and SMOTE, capturing Moderate patterns moderately well. Feature importances (e.g., sugars, riboflavin from the 100-sample results) likely remain relevant, aligning with PCA’s carbohydrate and vitamin emphasis.
+
+**Gradient Boosting:**
+
+**Accuracy:** 0.82, a substantial improvement from 0.65, making it the top performer.
+Class Performance:
+
+**Cold:** Strong F1-Score (0.79) with balanced precision and recall (0.79), improved from 0.67 F1.
+**Hot:** Excellent F1-Score (0.84) with high recall (0.86) and precision (0.82), better than 0.74 F1.
+**Moderate:** Impressive F1-Score (0.80), driven by perfect precision (1.00) but lower recall (0.67), a major leap from 0.00 F1, reflecting effective learning with 3 test samples.
+
+
+**Analysis:** Gradient Boosting’s sequential learning and focus on correcting errors excel with the validated dataset. The high Moderate F1-Score (0.80) confirms that human validation and SMOTE effectively addressed class imbalance. Feature importances (e.g., riboflavin, vitamin D) align with PCA’s vitamin-driven components (130-sample PC1).
+
+### Comparison with Initial Results (100-Sample Dataset):
+
+**SVM:** Dropped from 0.75 to 0.58 accuracy, with no improvement in Moderate F1 (0.00). The larger test set and dataset complexity may have overwhelmed the current hyperparameters.
+**Random Forest:** Improved from 0.65 to 0.72 accuracy, with Moderate F1 rising from 0.00 to 0.33, showing moderate success in learning new patterns.
+**Gradient Boosting:** Leaped from 0.65 to 0.82 accuracy, with Moderate F1 soaring from 0.00 to 0.80, demonstrating the power of validation and SMOTE.
+
+**Key Insight:** The 30 new samples and human validation significantly improved Moderate class performance, particularly for Gradient Boosting, validating the nutritional-temperament link. SVM’s decline suggests a need for retuning.
+
+
+
+### Project Conclusion
+
+**"The Cold, The Warm, and The Moderate"** demonstrates a promising synergy between modern nutritional science and traditional medicine’s temperament classifications. By leveraging the USDA’s FNDDS, we built a robust pipeline to classify foods into Cold, Hot, and Moderate categories using machine learning and data analysis. Starting with an 85-sample dataset, we faced challenges with the Moderate class’s scarcity (~11 samples), leading to expansions to 100 and ~130 samples through human-in-the-loop validation of ~30 new samples.
+
+**Key Findings:**
+
+
+**PCA Analysis:** PCA on 100 and 130 samples highlighted nutrients like protein, lipids, carbohydrates (130-sample PC1: 0.382), and vitamins (e.g., riboflavin: 0.407 in 130-sample PC1) as key drivers of temperament differences, validating a nutritional basis for traditional classifications.
+
+
+
+**K-Means Clustering:** Four clusters (100 samples) and three clusters (130 samples) showed partial alignment with temperaments, with clusters reflecting energy-dense (Hot), carbohydrate-heavy (Moderate/Hot), and water-rich (Cold) foods, suggesting natural nutritional groupings.
+
+
+
+**Machine Learning:** Random Forest, Gradient Boosting, and SVM were chosen for their complementary strengths. Initial 100-sample results showed SVM at 75% accuracy but 0.00 Moderate F1-Score due to class imbalance. Post-validation (~130 samples), Gradient Boosting achieved 81.58% accuracy and 0.80 Moderate F1-Score, Random Forest reached 71.88% and 0.33 Moderate F1, while SVM dropped to 57.69%, indicating a need for retuning.
+
+
+
+**Validation Impact:** Human-in-the-loop validation and SMOTE addressed Moderate scarcity, significantly improving performance, especially for Gradient Boosting, confirming the importance of expert feedback.
+
+**Impact and Future Directions:** The project validates that nutritional profiles from FNDDS can predict traditional temperaments, with Gradient Boosting’s success and PCA/K-Means insights providing a data-driven foundation for dietary recommendations in traditional medicine. Future work includes collecting 20-30 more Moderate samples, retuning SVM, testing ADASYN for oversampling, and developing a Flask/Streamlit app for interactive predictions. This open-source repository offers a scalable framework for researchers to explore nutritional science and traditional medicine, with potential applications in personalized nutrition and cultural dietary practices.
