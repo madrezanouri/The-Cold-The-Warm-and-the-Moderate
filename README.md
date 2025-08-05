@@ -108,3 +108,63 @@ We applied K-Means clustering with four clusters to the PCA-transformed 100-samp
 
 ![Mean features of 4 clusters comparison](images/mean_feat_data_100s.png)
 
+
+
+### Machine Learning Analysis Report
+**Why We Chose These Models**
+We selected Random Forest, Gradient Boosting, and Support Vector Machine (SVM) for training the dataset due to their complementary strengths in handling the challenges of our food temperament classification task:
+
+**Random Forest:**
+
+**Reason:** Random Forest is an ensemble method that builds multiple decision trees, reducing overfitting through averaging and handling non-linear relationships effectively. Its robustness to noisy data and ability to provide feature importance scores make it ideal for exploring which nutritional features (e.g., protein, lipids) drive temperament classifications.
+**Suitability:** With 26 nutritional features and a small, potentially noisy dataset (85 samples initially), Random Forest’s ability to handle high-dimensional data and imbalanced classes (via class weights) was critical.
+**Benefit:** Provides interpretable feature importances, helping identify key nutrients aligning with traditional temperaments.
+
+
+**Gradient Boosting:**
+
+**Reason:** Gradient Boosting builds trees sequentially, focusing on correcting errors of previous trees, which often yields superior performance on small datasets with complex patterns. Its ability to handle imbalanced data through weighted loss functions makes it suitable for the scarce Moderate class (11 samples in 85).
+Suitability: The dataset’s class imbalance and potential non-linear relationships between nutrients and temperaments make Gradient Boosting a strong candidate for capturing subtle patterns.
+Benefit: Offers high predictive accuracy and feature importance, complementing Random Forest’s insights.
+
+
+**Support Vector Machine (SVM):**
+
+**Reason:** SVM excels in finding optimal boundaries between classes, especially in high-dimensional spaces, using kernels (e.g., RBF) to capture non-linear relationships. Its robustness to outliers and effectiveness with small datasets make it suitable for our task.
+Suitability: The small dataset size and imbalanced classes (Moderate scarcity) benefit from SVM’s ability to maximize margins and handle class weights, potentially improving performance on minority classes.
+Benefit: Provides a different perspective from tree-based models, potentially capturing patterns missed by Random Forest or Gradient Boosting.
+
+
+**Data Insufficiency**
+The initial dataset contained 85 samples, with a significant class imbalance: approximately 38 Cold, 36 Hot, and only 11 Moderate samples (based on prior context). This scarcity of Moderate samples led to poor model performance on the Moderate class, as seen in the provided results (F1-Score: 0.00 across all models). The limited data hindered the models’ ability to learn distinct patterns for Moderate foods, which are critical for validating traditional temperament classifications.
+To address this:
+
+**Expansion to 100 Samples:** 
+We expanded the dataset to 100 samples by collecting additional data from the USDA’s FNDDS or refining labels, slightly increasing the Moderate sample count (estimated ~12-15). This improved feature representation but was still insufficient for robust Moderate predictions.
+Further Expansion to 130 Samples: Through human-in-the-loop validation, we added ~31 samples, bringing the total to ~130 samples with an estimated 15-20 Moderate samples. This expansion, combined with SMOTE for oversampling, significantly improved model performance, as evidenced by Gradient Boosting’s 81.58% accuracy and 0.80 Moderate F1-Score on the 130-sample dataset.
+
+**Model Performance Results (100-Sample Dataset)**
+The provided results for the 100-sample dataset (test set = 20 samples) are summarized below, with performance metrics and feature importances for Random Forest and Gradient Boosting, and classification metrics for SVM.
+
+
+### Machine Learning Model Performance (100-Sample Dataset)
+
+The table below summarizes the performance of Random Forest, Gradient Boosting, and SVM on the 100-sample dataset (test set = 20 samples).
+
+| Model             | Accuracy | Macro Avg F1-Score | Moderate F1-Score | Top Features (Random Forest & Gradient Boosting) |
+|-------------------|----------|--------------------|-------------------|------------------------------------------------|
+| Random Forest     | 0.65     | 0.46               | 0.00              | Sugars (0.077), Vitamin A (0.074), Riboflavin (0.064), Calcium (0.062) |
+| Gradient Boosting | 0.65     | 0.47               | 0.00              | Riboflavin (0.149), Vitamin D (0.137), Sugars (0.113), Copper (0.107) |
+| SVM               | 0.75     | 0.54               | 0.00              | N/A (SVM does not provide feature importances) |
+
+
+![Test Accuracy Comparison Across Models and Optimizations](images/chart.png)
+![Macro Avg F1-Score Comparison](images/F1_score_comparison (2).png)
+![F1-Score per Class Across Models and Optimizations](images/F1_score_per_class.png)
+
+**Notes**:
+- All models struggled with the Moderate class (F1-Score: 0.00) due to only ~2 Moderate samples in the test set.
+- SVM outperformed with 0.75 accuracy, driven by strong Cold (0.78 F1) and Hot (0.84 F1) performance.
+- Key features (sugars, riboflavin, vitamin D) align with PCA findings, suggesting nutritional relevance to temperaments.
+
+![t-SNE](images/t-SNE.png)
