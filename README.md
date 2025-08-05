@@ -34,7 +34,7 @@ Findings: PCA showed partial separation of Cold, Hot, and Moderate classes, with
 ![PCA on 85 sample data](images/PCA_init.png)
 
 
-**PCA on 100-Sample Dataset:**
+### PCA on 100-Sample Dataset:
 
 Method: Applied PCA to the expanded 100-sample dataset, retaining the top 5 components (PC1-PC5). The results, provided below, highlight feature contributions to each component.
 **Findings:** PC1 was heavily influenced by protein (-0.301), lipids (-0.329), energy (-0.365), and potassium (-0.333). PC2 emphasized carbohydrates (0.414) and sugars (0.322). PC3 and PC4 highlighted vitamins K and thiamin, and calcium and vitamin A, respectively. These suggest nutritional profiles align with temperament distinctions to some extent.
@@ -79,3 +79,32 @@ The table below shows the loadings of nutritional features for the first five pr
 - **PC3**: High loadings for thiamin (0.520) and vitamin K (0.519), with vitamin D (0.309), highlighting vitamin-driven differences.
 - **PC4**: Driven by calcium (0.539) and vitamin A (0.489), suggesting mineral and vitamin A influence.
 - **PC5**: Notable for folic acid (0.571), riboflavin (0.329), and zinc (0.328), indicating micronutrient contributions.
+
+
+### K-Means Clustering
+
+We applied K-Means clustering with four clusters to the PCA-transformed 100-sample data to explore natural groupings. The mean feature values for each cluster were:
+
+
+![PCA on 100 sample data](images/PCA_100s.png)
+
+
+
+**Cluster 0:** High in sodium (599 mg), energy (541.78 kcal), and potassium (402.96 mg), suggesting processed or energy-dense foods.
+
+
+
+**Cluster 1:** High in water (79.51 g), vitamin D (67.33 ug), and vitamin K (55.62 ug), indicating water-rich, vitamin-heavy foods.
+
+
+
+**Cluster 2:** High in zinc (435.88 mg), potassium (251.10 mg), and cholesterol (100.71 mg), possibly aligning with protein-rich foods.
+
+
+
+**Cluster 3:** High in vitamin A (180.50 ug), energy (176.50 kcal), and calcium (95.00 mg), suggesting nutrient-dense foods.
+
+
+
+![Mean features of 4 clusters comparison](images/mean_feat_data_100s.png)
+
