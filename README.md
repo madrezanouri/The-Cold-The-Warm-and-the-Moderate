@@ -161,6 +161,8 @@ The table below summarizes the performance of Random Forest, Gradient Boosting, 
 ![Test Accuracy Comparison Across Models and Optimizations](images/chart.png)
 ![Macro Avg F1-Score Comparison](images/F1_score_comparison_2.png)
 ![F1-Score per Class Across Models and Optimizations](images/F1_score_per_class.png)
+![Error Reduction Across Models and Optimizations](images/Error_reduction.png)
+
 
 **Notes**:
 - All models struggled with the Moderate class (F1-Score: 0.00) due to only ~2 Moderate samples in the test set.
