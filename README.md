@@ -1,7 +1,7 @@
 # The-Cold-The-Warm-and-the-Moderate
 **A machine learning project to classify foods into Cold, Hot, and Moderate temperaments based on nutritional data, inspired by traditional medicine.**
 
-![5 elements](images/cover_image_1.png)
+![5 elements](images/cover_image.png)
 
 ### Introduction
 
