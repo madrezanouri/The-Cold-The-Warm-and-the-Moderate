@@ -30,3 +30,5 @@ Output: Prepared a dataset ready for PCA, clustering, and model training, with f
 Objective: Reduced the dimensionality of the 26 nutritional features to identify key components driving temperament differences.
 Method: Applied PCA to the 85-sample dataset, retaining the top components (e.g., 2 or 3) explaining significant variance. Visualized the data in 2D to assess class separability.
 Findings: PCA showed partial separation of Cold, Hot, and Moderate classes, with Moderate samples often overlapping due to their scarcity. Key nutrients like protein, lipids, and energy were prominent in the first principal components.
+
+![PCA on 85 sample data](images/PCA_init.png)
